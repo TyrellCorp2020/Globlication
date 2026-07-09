@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Rank — how do you compare?</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#6C5CE7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="World Rank">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6F4FF;
+    --ink: #1B1730;
+    --ink-2: #635F7A;
+    --card: #FFFFFF;
+    --line: #ECE9F9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 48px 20px 80px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  .bg-decor {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.55;
+  }
+  .blob-a { width: 420px; height: 420px; top: -140px; left: -120px; background: radial-gradient(circle, #A08CFF, transparent 70%); }
+  .blob-b { width: 380px; height: 380px; top: 30%; right: -160px; background: radial-gradient(circle, #FF9AA8, transparent 70%); }
+  .blob-c { width: 460px; height: 460px; bottom: -180px; left: 20%; background: radial-gradient(circle, #7FE8D6, transparent 70%); }
+  .horse-mark {
+    position: absolute;
+    width: 780px;
+    height: 520px;
+    right: -180px;
+    bottom: -40px;
+    color: #6C5CE7;
+    opacity: 0.06;
+    transform: scaleX(-1) rotate(-4deg);
+  }
+  .hm-2 {
+    width: 340px;
+    height: 227px;
+    right: auto;
+    left: -90px;
+    top: 8%;
+    bottom: auto;
+    color: #FF6B6B;
+    opacity: 0.05;
+    transform: rotate(8deg);
+  }
+  .hm-3 {
+    width: 260px;
+    height: 173px;
+    right: 4%;
+    left: auto;
+    top: 42%;
+    bottom: auto;
+    color: #00C2A8;
+    opacity: 0.045;
+    transform: scaleX(-1) rotate(3deg);
+  }
+  .gallop-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    overflow: hidden;
+    opacity: 0.5;
+  }
+  .gallop-horse {
+    position: absolute;
+    top: 6px;
+    width: 90px;
+    height: 54px;
+    color: #6C5CE7;
+    opacity: 0.16;
+    animation: gallopAcross 26s linear infinite;
+  }
+  @keyframes gallopAcross {
+    from { left: -110px; transform: scaleX(1); }
+    49% { transform: scaleX(1); }
+    50% { left: calc(100% + 110px); transform: scaleX(-1); }
+    99% { transform: scaleX(-1); }
+    to { left: -110px; transform: scaleX(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gallop-horse { animation: none; display: none; }
+  }
+  .wrap { max-width: 640px; margin: 0 auto; position: relative; z-index: 1; }
+  .header-icons {
+    position: absolute;
+    top: 4px;
+    right: 0;
+    display: flex;
+    gap: 10px;
+  }
+  .icon-btn {
+    color: var(--ink-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+    background: #fff;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    font-size: 17px;
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+  .icon-btn:hover { color: var(--ink); transform: translateY(-1px); }
+  .eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6C5CE7;
+    background: #EEEBFD;
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin: 0 0 16px;
+    font-weight: 700;
+  }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 42px;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    color: var(--ink);
+  }
+  .lede {
+    color: var(--ink-2);
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0 0 20px;
+    max-width: 50ch;
+  }
+  .privacy-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+    background: #fff;
+    border: 1px solid var(--line);
+    padding: 8px 14px;
+    border-radius: 100px;
+    margin: 0 0 36px;
+    width: fit-content;
+  }
+  .privacy-note svg { width: 14px; height: 14px; flex-shrink: 0; stroke: #00C2A8; }
+  .track { position: relative; padding-left: 34px; }
+  .track::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    background-image: linear-gradient(var(--ink-2) 55%, transparent 45%);
+    background-size: 3px 14px;
+    background-repeat: repeat-y;
+    opacity: 0.25;
+  }
+  .track-dot {
+    position: absolute;
+    left: -34px;
+    top: 22px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 3px solid var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .track-dot svg { width: 13px; height: 13px; }
+  .card {
+    background: var(--accent);
+    color: #fff;
+    border-radius: 26px;
+    padding: 24px 26px;
+    margin-bottom: 26px;
+    position: relative;
+    overflow: hidden;
+    transform: rotate(var(--tilt, 0deg));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--accent) 70%, black 10%);
+  }
+  .card:nth-child(odd) { --tilt: -0.6deg; }
+  .card:nth-child(even) { --tilt: 0.6deg; }
+  .card:hover { transform: rotate(0deg) translateY(-3px); }
+  .card-ghost {
+    position: absolute;
+    top: -22px;
+    right: -6px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 108px;
+    color: #fff;
+    opacity: 0.14;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  .card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card-icon svg { width: 22px; height: 22px; stroke: #fff; fill: none; }
+  .q-num { display: none; }
+  .q-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+    line-height: 1.25;
+  }
+  .q-sub {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.75);
+    margin: 3px 0 0;
+  }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 4px;
+    outline: none;
+    background: rgba(255,255,255,0.3);
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+  .val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    min-width: 96px;
+    text-align: right;
+    color: #fff;
+  }
+  .val span { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.7); display: block; margin-top: -2px; }
+  button.reveal {
+    display: block;
+    width: 100%;
+    margin: 0;
+    background: linear-gradient(90deg, #6C5CE7, #A55EEA, #6C5CE7);
+    background-size: 200% auto;
+    color: #fff;
+    border: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 19px;
+    padding: 22px;
+    border-radius: 100px;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    box-shadow: 0 10px 28px rgba(108,92,231,0.45), 0 0 0 5px rgba(108,92,231,0.1);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-position 0.4s ease;
+    animation: revealPulse 2.8s ease-in-out infinite;
+  }
+  button.reveal:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 14px 32px rgba(108,92,231,0.55), 0 0 0 7px rgba(108,92,231,0.14);
+    background-position: right center;
+  }
+  @keyframes revealPulse {
+    0%, 100% { box-shadow: 0 10px 28px rgba(108,92,231,0.45), 0 0 0 5px rgba(108,92,231,0.1); }
+    50% { box-shadow: 0 10px 32px rgba(108,92,231,0.6), 0 0 0 9px rgba(108,92,231,0.16); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    button.reveal { animation: none; }
+  }
+  .cta-row { display: flex; gap: 10px; align-items: center; margin: 32px 0 36px; }
+  .info-card {
+    background: #fff;
+    border: 1.5px dashed #C9C0F5;
+    border-radius: 22px;
+    padding: 24px 26px;
+    margin: 8px 0 28px;
+  }
+  .info-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    background: #F0EEFB;
+    padding: 4px 10px;
+    border-radius: 100px;
+    margin-bottom: 10px;
+  }
+  .toggle-row { display: flex; gap: 10px; margin: 14px 0 14px; }
+  .toggle-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 100px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+    color: var(--ink-2);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .toggle-btn.active { background: #6C5CE7; border-color: #6C5CE7; color: #fff; }
+  .info-fact { font-size: 13px; color: var(--ink-2); line-height: 1.5; margin: 0; }
+  .results { display: none; }
+  .results.show { display: block; }
+  .result-card {
+    background: var(--card);
+    color: var(--ink);
+    border-radius: 20px;
+    padding: 22px 26px;
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--accent);
+  }
+  .result-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 10px;
+  }
+  .bell-wrap { margin: 6px 0 12px; }
+  .result-line {
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    margin: 0;
+  }
+  .pct-big {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .overall {
+    background: linear-gradient(135deg, #241E45, #4A3B8C 60%, #6C5CE7);
+    color: #fff;
+    border-radius: 24px;
+    padding: 34px 30px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(36,30,69,0.3);
+  }
+  .overall .eyebrow { background: rgba(255,255,255,0.14); color: #E5DFFF; }
+  .overall-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 52px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    margin: 6px 0;
+  }
+  .overall-sub { font-size: 14px; color: #C9C0F5; margin: 0 0 4px; }
+  .overall-rank {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(255,255,255,0.12);
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 100px;
+    margin: 10px 0 0;
+  }
+  .tier-card {
+    background: linear-gradient(135deg, var(--tier-a), var(--tier-b));
+    border-radius: 24px;
+    padding: 30px 28px;
+    margin-bottom: 24px;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(27,23,48,0.18);
+  }
+  .tier-card .eyebrow { background: rgba(255,255,255,0.2); color: #fff; }
+  .tier-horse { width: 240px; max-width: 78%; margin: 8px auto 10px; display: block; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 24px rgba(0,0,0,0.25); }
+  .tier-horse img { width: 100%; display: block; }
+  .tier-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    margin: 6px 0 6px;
+  }
+  .tier-desc { font-size: 14px; opacity: 0.92; max-width: 40ch; margin: 0 auto; line-height: 1.5; }
+  .summary-line {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    max-width: 36ch;
+    margin: 14px auto 0;
+    line-height: 1.5;
+    background: rgba(255,255,255,0.14);
+    border-radius: 14px;
+    padding: 12px 16px;
+  }
+  .tier-dots { display: flex; justify-content: center; gap: 8px; margin: 18px 0 4px; }
+  .tier-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.35); }
+  .tier-dot.active { background: #fff; }
+  .footnote {
+    font-size: 12px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    margin-top: 32px;
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+  }
+  h1, .q-label, .result-title, .tier-name, .lede, .tier-desc {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  @media (max-width: 480px) {
+    body { padding: 40px 16px 60px; }
+    .header-icons { position: static; justify-content: flex-end; margin-bottom: 14px; }
+    h1 { font-size: 30px; }
+    .lede { font-size: 14px; }
+    .card { padding: 22px 20px; }
+    .card-ghost { font-size: 72px; top: -12px; right: -2px; }
+    .track { padding-left: 26px; }
+    .track-dot { left: -26px; width: 20px; height: 20px; }
+    .track-dot svg { width: 11px; height: 11px; }
+    .overall-num { font-size: 38px; }
+    .tier-name { font-size: 22px; }
+    .tier-horse { width: 190px; }
+    .val { min-width: 76px; font-size: 16px; }
+    .slider-row { gap: 10px; }
+    button.reveal { font-size: 15px; padding: 16px; }
+    #soundToggle { width: 48px; height: 48px; font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-decor" aria-hidden="true">
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+  <div class="blob blob-c"></div>
+  <svg class="horse-mark hm-1" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
+    <path d="M40,520 C120,540 260,545 340,500 C300,480 260,460 250,410 C246,388 254,368 272,356
+      C260,330 258,296 278,264 C264,240 268,206 296,182 C288,150 306,110 348,86
+      C338,60 356,28 396,14 C440,-2 494,4 528,30 C556,52 566,84 556,112
+      C580,116 600,132 606,156 C630,158 650,176 654,200 C678,204 696,224 698,248
+      C724,254 742,278 740,304 C736,340 706,364 672,364 C676,392 662,418 636,430
+      C640,458 618,484 586,490 C560,522 520,540 476,538 C468,566 440,586 406,584
+      C398,606 372,620 344,614 C300,634 244,632 206,608 C166,616 126,606 100,580
+      C64,584 34,566 24,536 C22,528 28,520 40,520 Z"
+      fill="currentColor"/>
+  </svg>
+  <svg class="horse-mark hm-2" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
+    <use href="#horseSilhouette"/>
+  </svg>
+  <svg class="horse-mark hm-3" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
+    <use href="#horseSilhouette"/>
+  </svg>
+  <svg width="0" height="0" style="position:absolute;">
+    <defs>
+      <path id="horseSilhouette" d="M40,520 C120,540 260,545 340,500 C300,480 260,460 250,410 C246,388 254,368 272,356
+        C260,330 258,296 278,264 C264,240 268,206 296,182 C288,150 306,110 348,86
+        C338,60 356,28 396,14 C440,-2 494,4 528,30 C556,52 566,84 556,112
+        C580,116 600,132 606,156 C630,158 650,176 654,200 C678,204 696,224 698,248
+        C724,254 742,278 740,304 C736,340 706,364 672,364 C676,392 662,418 636,430
+        C640,458 618,484 586,490 C560,522 520,540 476,538 C468,566 440,586 406,584
+        C398,606 372,620 344,614 C300,634 244,632 206,608 C166,616 126,606 100,580
+        C64,584 34,566 24,536 C22,528 28,520 40,520 Z"/>
+    </defs>
+  </svg>
+  <div class="gallop-strip">
+    <svg class="gallop-horse" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10,95 C15,80 25,70 35,68 C32,58 36,46 46,40 C44,30 50,18 62,14
+        C68,6 80,2 90,6 C98,9 100,16 96,21 C108,22 116,30 118,40 C128,42 134,50 135,58
+        C144,60 150,68 150,76 L150,95 L138,95 L136,84 C130,88 122,90 114,88
+        L112,95 L100,95 L100,86 C90,90 78,90 68,86 L66,95 L54,95 L54,88
+        C44,90 32,88 24,82 L18,95 Z"
+        fill="currentColor"/>
+    </svg>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="header-icons">
+    <button id="soundToggleTop" type="button" title="Toggle sound" class="icon-btn" aria-label="Toggle sound">&#128266;</button>
+    <a href="https://github.com/TyrellCorp2020/Globlication" target="_blank" rel="noopener" class="icon-btn" aria-label="View source on GitHub">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.04-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.27 5.69.42.36.78 1.07.78 2.16 0 1.56-.01 2.82-.01 3.2 0 .31.21.67.8.56A10.52 10.52 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"/></svg>
+    </a>
+  </div>
+  <p class="eyebrow">Globlication</p>
+  <h1>How do you compare to the World, you horse?</h1>
+  <p class="lede">Move each slider to match your own numbers, then reveal where you land against global survey data across seven everyday measures.</p>
+  <div class="privacy-note">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"/></svg>
+    Your answers stay on your device — nothing is sent or stored anywhere.
+  </div>
+
+  <div id="questions" class="track"></div>
+
+  <div class="info-card">
+    <div class="info-tag">Not scored — just for fun</div>
+    <p class="q-label" style="color:var(--ink)">Are you in a relationship?</p>
+    <p class="q-sub">This one doesn't affect your rank — being single or partnered isn't a competition.</p>
+    <div class="toggle-row" id="relToggle">
+      <button type="button" class="toggle-btn active" data-val="single">Single</button>
+      <button type="button" class="toggle-btn" data-val="partnered">In a relationship</button>
+    </div>
+    <p class="info-fact" id="relFact">About 36% of the world's adults are unmarried or unpartnered — you're in good company either way.</p>
+  </div>
+
+  <div class="cta-row">
+    <button class="reveal" id="revealBtn" style="flex:1;">Reveal my world rank</button>
+    <button id="soundToggle" type="button" title="Toggle sound" style="width:56px; height:56px; border-radius:100px; border:1.5px solid var(--line); background:#fff; cursor:pointer; font-size:20px; flex-shrink:0;">&#128266;</button>
+  </div>
+
+  <div class="results" id="results">
+    <div class="tier-card" id="tierCard">
+      <p class="eyebrow">Your world rank</p>
+      <div class="tier-horse" id="tierHorse"></div>
+      <p class="tier-name" id="tierName">—</p>
+      <p class="tier-desc" id="tierDesc"></p>
+      <p class="summary-line" id="summaryLine"></p>
+      <div class="tier-dots" id="tierDots"></div>
+    </div>
+    <div class="overall">
+      <p class="eyebrow">Overall ranking</p>
+      <div class="overall-num" id="overallNum">—</div>
+      <p class="overall-sub" id="overallSub"></p>
+      <p class="overall-rank" id="overallRank"></p>
+    </div>
+    <div id="resultCards"></div>
+  </div>
+
+  <p class="footnote">
+    Estimates only. Each ranking is modeled from published survey averages and distributions (sleep and screen-time surveys, WHO exercise guidelines, World Bank income data, UK/EU pension savings data from the ONS and PensionBee, and US/UK national surveys on sexual and masturbation frequency), not a live global census — real distributions vary widely by country, age, and survey method. Pension savings in particular vary enormously by country's retirement system, so treat that one as especially loose. The "out of 8.3 billion" figure applies your overall ranking to the current UN/World Bank global population estimate — it's a rough conversion, not an actual headcount. Treat this as a fun approximation, not a scientific measurement.
+  </p>
+</div>
+
+<script>
+function erf(x) {
+  var sign = x < 0 ? -1 : 1;
+  x = Math.abs(x);
+  var a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  var t = 1/(1+p*x);
+  var y = 1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+  return sign*y;
+}
+function normalCdf(x, mean, sd) {
+  return 0.5*(1+erf((x-mean)/(sd*Math.sqrt(2))));
+}
+function lognormalCdf(x, median, sigma) {
+  if (x<=0) return 0.01;
+  var z = (Math.log(x)-Math.log(median))/sigma;
+  return 0.5*(1+erf(z/Math.sqrt(2)));
+}
+function tableCdf(x, table) {
+  for (var i=0;i<table.length;i++){
+    if (x<=table[i][0]) {
+      if (i===0) return table[0][1];
+      var lo=table[i-1], hi=table[i];
+      var frac=(x-lo[0])/(hi[0]-lo[0]);
+      return lo[1]+frac*(hi[1]-lo[1]);
+    }
+  }
+  return table[table.length-1][1];
+}
+
+var questions = [
+  { id:'sleep', num:'01', label:'How many hours do you sleep a night?', sub:'On a typical weeknight',
+    min:3,max:11,step:0.5,def:7,unit:'hrs', accent:'#6C5CE7',
+    superBest:'a champion sleeper', superWorst:'your sleep schedule',
+    calc:function(v){ return normalCdf(v,6.8,1.0); },
+    describe:function(v){ return v+' hours a night'; } },
+  { id:'screen', num:'02', label:'How many hours a day do you spend on screens?', sub:'Phone, computer, and TV combined',
+    min:0,max:16,step:0.5,def:6.5,unit:'hrs', accent:'#FF6B6B', invert:true,
+    superBest:'refreshingly offline', superWorst:'your screen time',
+    calc:function(v){ return normalCdf(v,6.7,2.2); },
+    describe:function(v){ return v+' hours a day'; } },
+  { id:'exercise', num:'03', label:'How many days a week do you exercise?', sub:'Any structured activity',
+    min:0,max:7,step:1,def:3,unit:'days', accent:'#00C2A8',
+    superBest:'a certified gym rat', superWorst:'your exercise',
+    calc:function(v){ return tableCdf(v,[[0,0.20],[1,0.35],[2,0.50],[3,0.62],[4,0.75],[5,0.85],[6,0.93],[7,0.98]]); },
+    describe:function(v){ return v+' days a week'; } },
+  { id:'income', num:'04', label:'What is your annual personal income?', sub:'In US dollars, before tax',
+    min:0,max:1000000,step:5000,def:15000,unit:'USD', accent:'#FFB020',
+    superBest:'a certified top earner', superWorst:'your income',
+    calc:function(v){ return lognormalCdf(Math.max(v,1),2920,1.7); },
+    describe:function(v){ return '$'+Math.round(v).toLocaleString()+' a year'; } },
+  { id:'sex', num:'05', label:'How often do you have sex?', sub:'Times per month, on average',
+    min:0,max:30,step:1,def:4,unit:'/mo', accent:'#FF4D8D',
+    superBest:'a certified heartthrob', superWorst:'your sex life',
+    calc:function(v){ return tableCdf(v,[[0,0.28],[1,0.38],[2,0.48],[4,0.58],[6,0.68],[8,0.78],[12,0.90],[20,0.97],[30,0.995]]); },
+    describe:function(v){ return v+' times a month'; } },
+  { id:'masturbation', num:'06', label:'How often do you masturbate?', sub:'Times per month, on average',
+    min:0,max:30,step:1,def:8,unit:'/mo', accent:'#9B5DE5',
+    superBest:'a top masturbator', superWorst:'your solo game',
+    calc:function(v){ return tableCdf(v,[[0,0.30],[2,0.45],[4,0.55],[8,0.68],[12,0.78],[20,0.90],[30,0.97]]); },
+    describe:function(v){ return v+' times a month'; } },
+  { id:'pension', num:'07', label:'How big is your pension pot?', sub:'Total retirement savings, in US dollars',
+    min:0,max:500000,step:5000,def:20000,unit:'USD', accent:'#2D9CDB',
+    superBest:'retirement-ready', superWorst:'your pension pot',
+    calc:function(v){ return lognormalCdf(Math.max(v,1),20000,1.6); },
+    describe:function(v){ return '$'+Math.round(v).toLocaleString()+' saved'; } }
+];
+
+var horseIcon = '<path d="M6 21c0-4 1-7 3-9-1-3 0-6 3-8 0 2 1 3 3 3s3-1 4-3c1 2 1 5-1 7 1 2 1 5 0 8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 4l2-2.3 1 3.1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.2" cy="9.2" r="0.9" fill="currentColor" stroke="none"/>';
+var icons = {
+  sleep: horseIcon,
+  screen: horseIcon,
+  exercise: horseIcon,
+  income: horseIcon,
+  sex: horseIcon,
+  masturbation: horseIcon,
+  pension: horseIcon
+};
+
+var qDiv = document.getElementById('questions');
+questions.forEach(function(q, qi){
+  var card = document.createElement('div');
+  card.className = 'card';
+  card.style.setProperty('--accent', q.accent);
+  card.innerHTML =
+    '<div class="track-dot" style="background:'+q.accent+'"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M6 10a6 6 0 1 1 12 0v7M6 10v7"/></svg></div>'+
+    '<div class="card-ghost">'+q.num+'</div>'+
+    '<div class="card-top">'+
+      '<div class="card-icon"><svg viewBox="0 0 24 24">'+icons[q.id]+'</svg></div>'+
+      '<div><p class="q-label">'+q.label+'</p><p class="q-sub">'+q.sub+'</p></div>'+
+    '</div>'+
+    '<div class="slider-row">'+
+      '<input type="range" id="'+q.id+'" min="'+q.min+'" max="'+q.max+'" step="'+q.step+'" value="'+q.def+'">'+
+      '<div class="val" id="'+q.id+'-out">'+q.def+' <span>'+q.unit+'</span></div>'+
+    '</div>';
+  qDiv.appendChild(card);
+  var input = card.querySelector('#'+q.id);
+  var out = card.querySelector('#'+q.id+'-out');
+  function paintTrack(){
+    var pctFill = (input.value-input.min)/(input.max-input.min)*100;
+    input.style.background = 'linear-gradient(to right, #fff '+pctFill+'%, rgba(255,255,255,0.3) '+pctFill+'%)';
+  }
+  input.addEventListener('input', function(){
+    out.innerHTML = input.value+' <span>'+q.unit+'</span>';
+    paintTrack();
+  });
+  paintTrack();
+});
+
+function bellSvg(pct, accent) {
+  var w=280,h=70,mid=w/2;
+  var x = pct*w/100;
+  var path = 'M0,'+h+' ';
+  for (var i=0;i<=w;i+=4){
+    var t=(i-mid)/(w/5);
+    var y = h - (h-14)*Math.exp(-t*t/2);
+    path += 'L'+i+','+y.toFixed(1)+' ';
+  }
+  path += 'L'+w+','+h+' Z';
+  return '<svg width="100%" height="'+h+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" style="display:block">'+
+    '<path d="'+path+'" fill="'+accent+'22" stroke="'+accent+'55" stroke-width="1"/>'+
+    '<line x1="'+x+'" y1="6" x2="'+x+'" y2="'+h+'" stroke="'+accent+'" stroke-width="2.5"/>'+
+    '<circle cx="'+x+'" cy="6" r="4.5" fill="'+accent+'"/>'+
+    '</svg>';
+}
+
+function ordinal(n) {
+  var s=["th","st","nd","rd"], v=n%100;
+  return n+(s[(v-20)%10]||s[v]||s[0]);
+}
+function topBottomLabel(pct){
+  var r = Math.round(pct);
+  if (r >= 50) return 'top ' + Math.max(1, 100 - r) + '%';
+  return 'bottom ' + Math.max(1, r) + '%';
+}
+
+var tiers = [
+  { level:1, name:'Out to pasture', desc:"Not going to sugarcoat it — this is rough. Every number here has nowhere to go but up.", a:'#6B6459', b:'#4A453D' },
+  { level:2, name:'Finding your gait', desc:"Below the herd average and a little wobbly, but at least you're upright.", a:'#8C6E4A', b:'#6B5136' },
+  { level:3, name:'Trotting along', desc:"Perfectly, forgettably average. The beige minivan of horses.", a:'#D9A441', b:'#B87F2A' },
+  { level:4, name:'In full stride', desc:"Ahead of most of the world. Mildly insufferable at parties.", a:'#4C6EF5', b:'#6C5CE7' },
+  { level:5, name:'Thoroughbred', desc:"Disgustingly good at this. Everyone else can head home now.", a:'#9B5DE5', b:'#FF4D8D' }
+];
+
+function tierFromPct(avg) {
+  if (avg < 20) return tiers[0];
+  if (avg < 40) return tiers[1];
+  if (avg < 60) return tiers[2];
+  if (avg < 80) return tiers[3];
+  return tiers[4];
+}
+
+function calibratedPercentile(avg, numQuestions){
+  var sdSingle = 100/Math.sqrt(12);
+  var sdMean = sdSingle/Math.sqrt(numQuestions);
+  var z = (avg - 50)/sdMean;
+  return normalCdf(z, 0, 1) * 100;
+}
+
+function legPath(x, yTop, yGround, kink, w) {
+  var yMid = yTop + (yGround-yTop)*0.44;
+  var yLow = yTop + (yGround-yTop)*0.8;
+  var hw = w/2;
+  var xKnee = x + kink*0.5;
+  var xLow = x + kink;
+  var xHoof = x + kink*0.85;
+  return 'M'+(x-hw*1.1)+','+yTop+
+    ' C'+(x-hw)+','+(yTop+10)+' '+(xKnee-hw*0.9)+','+(yMid-8)+' '+(xKnee-hw*0.85)+','+yMid+
+    ' C'+(xLow-hw*0.75)+','+(yMid+14)+' '+(xLow-hw*0.7)+','+(yLow-6)+' '+(xHoof-hw*0.65)+','+yLow+
+    ' L'+(xHoof-hw*0.9)+','+yGround+
+    ' L'+(xHoof+hw*0.9)+','+yGround+
+    ' L'+(xHoof+hw*0.65)+','+yLow+
+    ' C'+(xLow+hw*0.7)+','+(yLow-6)+' '+(xLow+hw*0.75)+','+(yMid+14)+' '+(xKnee+hw*0.85)+','+yMid+
+    ' C'+(xKnee+hw*0.9)+','+(yMid-8)+' '+(x+hw)+','+(yTop+10)+' '+(x+hw*1.1)+','+yTop+' Z';
+}
+
+function horseSvg(level) {
+  var cfg = {
+    1: { body:'#8B6F47', bodyDk:'#5C4A2E', mane:'#3F3222', mane2:'#C9BBA0', slump:9, kinkF:14, kinkH:-16, legW:15, eye:'closed', ribs:true, glasses:false, sparkle:false, maneN:5, maneLen:20, tailLen:0.7, glow:false, muscle:false, shaggy:true, patchy:true },
+    2: { body:'#A9906F', bodyDk:'#8A7455', mane:'#5C4C36', mane2:'#B7A889', slump:4.5, kinkF:7, kinkH:-9, legW:16, eye:'half', ribs:false, glasses:false, sparkle:false, maneN:4, maneLen:16, tailLen:0.8, glow:false, muscle:false, shaggy:false, patchy:false },
+    3: { body:'#CE9E51', bodyDk:'#A97C34', mane:'#8C6423', mane2:'#8C6423', slump:0, kinkF:3, kinkH:-5, legW:17, eye:'open', ribs:false, glasses:false, sparkle:false, maneN:5, maneLen:18, tailLen:1, glow:false, muscle:false, shaggy:false, patchy:false },
+    4: { body:'#5C7CFA', bodyDk:'#3E5BD9', mane:'#2B3FA8', mane2:'#2B3FA8', slump:-2.5, kinkF:2, kinkH:-4, legW:18, eye:'open', ribs:false, glasses:false, sparkle:false, maneN:6, maneLen:22, tailLen:1.15, glow:true, muscle:true, shaggy:false, patchy:false },
+    5: { body:'#8B4A2B', bodyDk:'#5A2E17', mane:'#1A1410', mane2:'#1A1410', slump:-5, kinkF:2, kinkH:-4, legW:19, eye:'open', ribs:false, glasses:true, sparkle:true, maneN:7, maneLen:26, tailLen:1.3, glow:true, muscle:true, shaggy:false, patchy:false, blaze:true, socks:true }
+  }[level];
+
+  var gid = 'g'+level;
+  var groundY = 268;
+  var bodyShiftY = 108 + cfg.slump*0.7;
+
+  var legsDef = [
+    { x:118, yTop:158+bodyShiftY-108, kink:cfg.kinkH, hind:true },
+    { x:136, yTop:162+bodyShiftY-108, kink:cfg.kinkH*0.8, hind:true },
+    { x:246, yTop:150+bodyShiftY-108, kink:cfg.kinkF, hind:false },
+    { x:262, yTop:154+bodyShiftY-108, kink:cfg.kinkF*0.8, hind:false }
+  ];
+  var legs = '';
+  legsDef.forEach(function(l){
+    legs += '<path d="'+legPath(l.x, l.yTop, groundY, l.kink, cfg.legW)+'" fill="url(#'+gid+')" opacity="0.98"/>';
+  });
+
+  var dy = bodyShiftY - 108;
+  var torso = '<path d="M255,'+(95+dy)+' C230,'+(80+dy)+' 190,'+(76+dy)+' 158,'+(86+dy)+
+    ' C128,'+(96+dy)+' 100,'+(112+dy)+' 92,'+(140+dy)+
+    ' C88,'+(156+dy)+' 92,'+(170+dy)+' 105,'+(180+dy)+
+    ' C135,'+(200+dy)+' 190,'+(206+dy)+' 228,'+(200+dy)+
+    ' C252,'+(196+dy)+' 268,'+(184+dy)+' 276,'+(166+dy)+
+    ' C282,'+(152+dy)+' 279,'+(136+dy)+' 271,'+(120+dy)+
+    ' C266,'+(108+dy)+' 262,'+(101+dy)+' 255,'+(95+dy)+' Z" fill="url(#'+gid+')"/>';
+
+  var neckHeadY = dy;
+  var neckHead = '<path d="M250,'+(102+neckHeadY)+
+    ' C260,'+(78+neckHeadY)+' 272,'+(56+neckHeadY)+' 294,'+(42+neckHeadY)+
+    ' C308,'+(33+neckHeadY)+' 324,'+(28+neckHeadY)+' 336,'+(33+neckHeadY)+
+    ' C345,'+(37+neckHeadY)+' 348,'+(45+neckHeadY)+' 344,'+(53+neckHeadY)+
+    ' C341,'+(60+neckHeadY)+' 333,'+(63+neckHeadY)+' 326,'+(68+neckHeadY)+
+    ' C327,'+(76+neckHeadY)+' 322,'+(84+neckHeadY)+' 313,'+(89+neckHeadY)+
+    ' L306,'+(103+neckHeadY)+
+    ' C300,'+(112+neckHeadY)+' 288,'+(117+neckHeadY)+' 275,'+(114+neckHeadY)+
+    ' C263,'+(112+neckHeadY)+' 254,'+(105+neckHeadY)+' 250,'+(102+neckHeadY)+' Z" fill="url(#'+gid+')"/>'
+    + '<path d="M330,'+(38+neckHeadY)+' L338,'+(20+neckHeadY)+' L342,'+(40+neckHeadY)+' Z" fill="'+cfg.bodyDk+'"/>';
+
+  var maneStrands = '';
+  var neckCurve = [[286,48],[273,58],[261,68],[252,78],[246,90],[244,100]];
+  for (var i=0;i<cfg.maneN && i<neckCurve.length;i++){
+    var p = neckCurve[i];
+    var py = p[1]+neckHeadY, px=p[0];
+    var len = cfg.maneLen + (i%2===0? 4:-3);
+    var strandColor = cfg.shaggy ? (i%2===0 ? cfg.mane : cfg.mane2) : cfg.mane;
+    var jag = cfg.shaggy ? (i%3-1)*6 : 0;
+    maneStrands += '<path d="M'+px+','+py+' C'+(px-len*0.3)+','+(py-len*0.6+jag)+' '+(px-len*0.7)+','+(py-len*0.3)+' '+(px-len)+','+(py+len*0.15+jag)+
+      ' C'+(px-len*0.6)+','+(py+len*0.05)+' '+(px-len*0.25)+','+(py+len*0.28)+' '+px+','+(py+len*0.28)+' Z" fill="'+strandColor+'" opacity="0.92"/>';
+  }
+  var forelock = cfg.shaggy
+    ? '<path d="M322,'+(24+neckHeadY)+' C312,'+(30+neckHeadY)+' 302,'+(44+neckHeadY)+' 300,'+(66+neckHeadY)+
+      ' C304,'+(58+neckHeadY)+' 312,'+(48+neckHeadY)+' 320,'+(42+neckHeadY)+
+      ' C316,'+(54+neckHeadY)+' 310,'+(66+neckHeadY)+' 308,'+(80+neckHeadY)+
+      ' C316,'+(68+neckHeadY)+' 326,'+(52+neckHeadY)+' 330,'+(34+neckHeadY)+' Z" fill="'+cfg.mane+'" opacity="0.95"/>'
+    : '';
+
+  var mudPatches = cfg.patchy
+    ? '<ellipse cx="180" cy="'+(150+dy)+'" rx="18" ry="12" fill="'+cfg.mane2+'" opacity="0.35" transform="rotate(-12 180 '+(150+dy)+')"/>'
+    + '<ellipse cx="130" cy="'+(175+dy)+'" rx="14" ry="9" fill="'+cfg.mane2+'" opacity="0.3" transform="rotate(8 130 '+(175+dy)+')"/>'
+    + '<ellipse cx="230" cy="'+(160+dy)+'" rx="12" ry="8" fill="'+cfg.mane2+'" opacity="0.3"/>'
+    : '';
+
+  var blaze = cfg.blaze
+    ? '<path d="M310,'+(45+neckHeadY)+' C306,'+(60+neckHeadY)+' 302,'+(75+neckHeadY)+' 300,'+(90+neckHeadY)+
+      ' C299,'+(96+neckHeadY)+' 300,'+(100+neckHeadY)+' 303,'+(101+neckHeadY)+
+      ' C307,'+(88+neckHeadY)+' 312,'+(72+neckHeadY)+' 316,'+(48+neckHeadY)+' Z" fill="#F2EDE3" opacity="0.95"/>'
+    : '';
+
+  var socks = cfg.socks
+    ? '<rect x="'+(262-cfg.legW*0.5)+'" y="'+(groundY-38)+'" width="'+(cfg.legW*1.05)+'" height="38" rx="6" fill="#F2EDE3" opacity="0.92"/>'
+    + '<rect x="'+(118-cfg.legW*0.5)+'" y="'+(groundY-30)+'" width="'+(cfg.legW*1.05)+'" height="30" rx="6" fill="#F2EDE3" opacity="0.85"/>'
+    : '';
+
+  var tailBaseX=158, tailBaseY=90+dy;
+  var tl = cfg.tailLen;
+  var tail = '<path d="M'+tailBaseX+','+tailBaseY+
+    ' C'+(tailBaseX-30*tl)+','+(tailBaseY+8*tl)+' '+(tailBaseX-42*tl)+','+(tailBaseY+35*tl)+' '+(tailBaseX-34*tl)+','+(tailBaseY+62*tl)+
+    ' C'+(tailBaseX-30*tl)+','+(tailBaseY+45*tl)+' '+(tailBaseX-22*tl)+','+(tailBaseY+22*tl)+' '+(tailBaseX-10)+','+(tailBaseY+6)+
+    ' Z" fill="'+cfg.mane+'" opacity="0.9"/>'
+    + '<path d="M'+(tailBaseX-4)+','+tailBaseY+' C'+(tailBaseX-26*tl)+','+(tailBaseY+14*tl)+' '+(tailBaseX-36*tl)+','+(tailBaseY+40*tl)+' '+(tailBaseX-26*tl)+','+(tailBaseY+66*tl)+'" stroke="'+cfg.mane+'" stroke-width="2" fill="none" opacity="0.5"/>';
+
+  var eyeShape = cfg.eye === 'closed'
+    ? '<path d="M289,'+(70+neckHeadY)+' q6,4 12,0" stroke="#332" stroke-width="2" fill="none" stroke-linecap="round"/>'
+    : (cfg.eye === 'half'
+      ? '<path d="M289,'+(69+neckHeadY)+' q6,3 12,0" stroke="#241E45" stroke-width="3" fill="none" stroke-linecap="round"/>'
+      : '<circle cx="295" cy="'+(68+neckHeadY)+'" r="3.3" fill="#241E45"/><circle cx="296.3" cy="'+(66.7+neckHeadY)+'" r="1" fill="#fff"/>');
+
+  var ribs = cfg.ribs
+    ? '<path d="M150,'+(108+dy)+' q-2,22 -8,34" stroke="#00000020" stroke-width="2" fill="none"/><path d="M170,'+(100+dy)+' q-2,26 -8,40" stroke="#00000020" stroke-width="2" fill="none"/><path d="M190,'+(98+dy)+' q-2,28 -8,42" stroke="#00000020" stroke-width="2" fill="none"/>'
+    : '';
+
+  var muscle = cfg.muscle
+    ? '<path d="M120,'+(150+dy)+' q14,10 10,32" stroke="'+cfg.bodyDk+'" stroke-width="2" fill="none" opacity="0.45"/><path d="M248,'+(140+dy)+' q10,8 8,26" stroke="'+cfg.bodyDk+'" stroke-width="2" fill="none" opacity="0.45"/>'
+    : '';
+
+  var glasses = cfg.glasses
+    ? '<rect x="286" y="'+(62+neckHeadY)+'" width="22" height="10" rx="4" fill="#1B1730"/><line x1="308" y1="'+(66+neckHeadY)+'" x2="318" y2="'+(60+neckHeadY)+'" stroke="#1B1730" stroke-width="2"/>'
+    : '';
+
+  var sparkle = cfg.sparkle
+    ? '<g fill="#FFD166"><circle cx="70" cy="50" r="3"/><circle cx="50" cy="90" r="2"/><circle cx="320" cy="30" r="2.5"/><circle cx="30" cy="130" r="2"/></g>'
+    + '<path d="M60,'+(190+dy)+' q-18,-2 -30,6" stroke="#FF4D8D" stroke-width="2.5" opacity="0.55" fill="none" stroke-linecap="round"/>'
+    + '<path d="M64,'+(202+dy)+' q-20,-2 -34,5" stroke="#7C3AED" stroke-width="2.5" opacity="0.4" fill="none" stroke-linecap="round"/>'
+    : '';
+
+  var glow = cfg.glow ? '<ellipse cx="185" cy="'+groundY+'" rx="115" ry="10" fill="'+cfg.body+'" opacity="0.16"/>' : '';
+
+  return '<svg viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg">'
+    + '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0%" stop-color="'+cfg.body+'"/><stop offset="100%" stop-color="'+cfg.bodyDk+'"/>'
+    + '</linearGradient></defs>'
+    + '<ellipse cx="185" cy="'+groundY+'" rx="108" ry="8" fill="#00000016"/>'
+    + glow
+    + tail
+    + legs
+    + socks
+    + torso
+    + ribs
+    + muscle
+    + neckHead
+    + blaze
+    + maneStrands
+    + forelock
+    + mudPatches
+    + eyeShape
+    + '<ellipse cx="310" cy="'+(78+neckHeadY)+'" rx="2.2" ry="1.6" fill="#241E45" opacity="0.6"/>'
+    + glasses
+    + sparkle
+    + '</svg>';
+}
+
+function tierDots(level){
+  var s='';
+  for (var i=1;i<=5;i++){ s += '<div class="tier-dot'+(i<=level?' active':'')+'"></div>'; }
+  return s;
+}
+
+var relFacts = {
+  single: "About 36% of the world's adults are unmarried or unpartnered — you're in good company either way.",
+  partnered: "About 64% of women worldwide are currently married or in a union, per UN and Our World in Data figures."
+};
+var relToggle = document.getElementById('relToggle');
+relToggle.querySelectorAll('.toggle-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    relToggle.querySelectorAll('.toggle-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('relFact').textContent = relFacts[btn.dataset.val];
+  });
+});
+
+var soundOn = true;
+var soundToggle = document.getElementById('soundToggle');
+var soundToggleTop = document.getElementById('soundToggleTop');
+
+function setToggleIcons(){
+  var icon = soundOn ? '&#128266;' : '&#128263;';
+  soundToggle.innerHTML = icon;
+  soundToggleTop.innerHTML = icon;
+}
+
+var audioCtx = null;
+function getCtx(){
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+var musicGain = null;
+var musicBuffer = null;
+var musicSource = null;
+var musicPipelineStarted = false;
+
+function initMusicPipeline(){
+  if (musicPipelineStarted) return;
+  musicPipelineStarted = true;
+  var ctx = getCtx();
+  musicGain = ctx.createGain();
+  musicGain.gain.value = soundOn ? 0.35 : 0;
+  musicGain.connect(ctx.destination);
+  fetch('jingle.mp3')
+    .then(function(r){ return r.arrayBuffer(); })
+    .then(function(buf){ return ctx.decodeAudioData(buf); })
+    .then(function(decoded){
+      musicBuffer = decoded;
+      startMusicLoop();
+    })
+    .catch(function(){});
+}
+
+function startMusicLoop(){
+  if (!musicBuffer || musicSource || !soundOn) return;
+  var ctx = getCtx();
+  musicSource = ctx.createBufferSource();
+  musicSource.buffer = musicBuffer;
+  musicSource.loop = true;
+  musicSource.connect(musicGain);
+  musicSource.start(0);
+}
+
+function unlockAndStart(){
+  var ctx = getCtx();
+  initMusicPipeline();
+  if (ctx.state === 'suspended') {
+    ctx.resume().then(startMusicLoop).catch(function(){});
+  } else {
+    startMusicLoop();
+  }
+}
+
+function handleFirstGesture(){
+  unlockAndStart();
+  document.removeEventListener('click', handleFirstGesture);
+  document.removeEventListener('touchend', handleFirstGesture);
+  document.removeEventListener('touchstart', handleFirstGesture);
+  document.removeEventListener('keydown', handleFirstGesture);
+}
+document.addEventListener('click', handleFirstGesture);
+document.addEventListener('touchend', handleFirstGesture);
+document.addEventListener('touchstart', handleFirstGesture);
+document.addEventListener('keydown', handleFirstGesture);
+
+function toggleSound(){
+  soundOn = !soundOn;
+  setToggleIcons();
+  if (musicGain) musicGain.gain.setTargetAtTime(soundOn ? 0.35 : 0, getCtx().currentTime, 0.05);
+  if (soundOn) unlockAndStart();
+}
+soundToggle.addEventListener('click', toggleSound);
+soundToggleTop.addEventListener('click', toggleSound);
+function playTone(freq, startTime, duration, type, gainPeak){
+  var ctx = getCtx();
+  var osc = ctx.createOscillator();
+  var gain = ctx.createGain();
+  osc.type = type || 'triangle';
+  osc.frequency.setValueAtTime(freq, startTime);
+  gain.gain.setValueAtTime(0, startTime);
+  gain.gain.linearRampToValueAtTime(gainPeak || 0.18, startTime + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(startTime);
+  osc.stop(startTime + duration + 0.05);
+}
+function playJingle(level){
+  if (!soundOn) return;
+  var ctx = getCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+  var now = ctx.currentTime;
+  var sequences = {
+    1: [[220,'sawtooth'],[196,'sawtooth'],[164.8,'sawtooth']],
+    2: [[261.6,'triangle'],[293.7,'triangle'],[277.2,'triangle']],
+    3: [[329.6,'triangle'],[392,'triangle'],[440,'triangle']],
+    4: [[392,'triangle'],[493.9,'triangle'],[587.3,'triangle'],[659.3,'triangle']],
+    5: [[523.3,'square'],[659.3,'square'],[784,'square'],[1046.5,'square']]
+  };
+  var seq = sequences[level] || sequences[3];
+  var step = 0.14;
+  seq.forEach(function(note, i){
+    playTone(note[0], now + i*step, step*1.3, note[1], level>=4 ? 0.14 : 0.16);
+  });
+}
+
+document.getElementById('revealBtn').addEventListener('click', function(){
+  var total=0, out=document.getElementById('resultCards');
+  var categoryScores = [];
+  out.innerHTML='';
+  questions.forEach(function(q){
+    var v = parseFloat(document.getElementById(q.id).value);
+    var pct = Math.max(0.5,Math.min(99.5,q.calc(v)*100));
+    var score = q.invert ? (100-pct) : pct;
+    total += score;
+    categoryScores.push({ q:q, score:score });
+    var div = document.createElement('div');
+    div.className='result-card';
+    div.style.setProperty('--accent', q.accent);
+    var directionNote = q.invert ? ' (less screen time counts in your favor for the overall score)' : '';
+    div.innerHTML =
+      '<p class="result-title">'+q.label.replace('do you','you').replace('How many','Your').replace('?','')+'</p>'+
+      '<div class="bell-wrap">'+bellSvg(pct, q.accent)+'</div>'+
+      '<p class="result-line">You reported <strong>'+q.describe(v)+'</strong>. That puts you in the '+
+      '<span class="pct-big">'+topBottomLabel(pct)+'</span> worldwide'+directionNote+'.</p>';
+    out.appendChild(div);
+  });
+  var avg = total/questions.length;
+  var calibrated = calibratedPercentile(avg, questions.length);
+  var overallLabel = topBottomLabel(calibrated);
+  document.getElementById('overallNum').textContent = overallLabel.charAt(0).toUpperCase() + overallLabel.slice(1);
+  document.getElementById('overallSub').textContent = 'Averaged across all seven measures, worldwide';
+
+  var sorted = categoryScores.slice().sort(function(a,b){ return b.score - a.score; });
+  var best = sorted[0], worst = sorted[sorted.length-1];
+  var summaryText;
+  if (best.q.id === worst.q.id || Math.abs(best.score - worst.score) < 3) {
+    summaryText = "Remarkably balanced across the board — no standout wins, no glaring gaps.";
+  } else {
+    summaryText = "You're " + best.q.superBest + ", but you might want to work on " + worst.q.superWorst + ".";
+  }
+  document.getElementById('summaryLine').textContent = summaryText;
+
+  var WORLD_POPULATION = 8300000000;
+  var rankFromTop = Math.max(1, Math.round(WORLD_POPULATION * (100-calibrated)/100));
+  document.getElementById('overallRank').textContent =
+    '≈ #' + rankFromTop.toLocaleString() + ' out of ' + (WORLD_POPULATION/1e9).toFixed(1) + ' billion people';
+
+  var tier = tierFromPct(calibrated);
+  playJingle(tier.level);
+  var tierCard = document.getElementById('tierCard');
+  tierCard.style.setProperty('--tier-a', tier.a);
+  tierCard.style.setProperty('--tier-b', tier.b);
+  document.getElementById('tierHorse').innerHTML =
+    '<img src="horse-tier-'+tier.level+'.jpg" alt="'+tier.name+' horse" onerror="this.parentElement.innerHTML=horseSvg('+tier.level+');">';
+  document.getElementById('tierName').textContent = tier.name;
+  document.getElementById('tierDesc').textContent = tier.desc;
+  document.getElementById('tierDots').innerHTML = tierDots(tier.level);
+
+  document.getElementById('results').classList.add('show');
+  document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
