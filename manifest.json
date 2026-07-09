@@ -1,0 +1,16 @@
+{
+  "name": "World Rank",
+  "short_name": "World Rank",
+  "description": "See how you compare to the rest of the world across sleep, activity, income, and more.",
+  "start_url": "./world-rank.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#14202E",
+  "theme_color": "#14202E",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
