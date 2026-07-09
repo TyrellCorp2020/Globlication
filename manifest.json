@@ -2,7 +2,7 @@
   "name": "World Rank",
   "short_name": "World Rank",
   "description": "See how you compare to the rest of the world across sleep, activity, income, and more.",
-  "start_url": "./world-rank.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#14202E",
