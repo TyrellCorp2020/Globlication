@@ -1,4 +1,4 @@
-var CACHE_NAME = 'world-rank-v2';
+var CACHE_NAME = 'world-rank-v3';
 var FILES_TO_CACHE = [
   './index.html',
   './manifest.json',
@@ -8,7 +8,8 @@ var FILES_TO_CACHE = [
   './horse-tier-2.jpg',
   './horse-tier-3.jpg',
   './horse-tier-4.jpg',
-  './horse-tier-5.jpg'
+  './horse-tier-5.jpg',
+  './jingle.mp3'
 ];
 
 self.addEventListener('install', function(event) {

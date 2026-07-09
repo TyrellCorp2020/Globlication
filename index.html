@@ -363,6 +363,7 @@
 </style>
 </head>
 <body>
+<audio id="bgMusic" src="jingle.mp3" loop preload="auto" style="display:none;"></audio>
 <div class="bg-decor" aria-hidden="true">
   <div class="blob blob-a"></div>
   <div class="blob blob-b"></div>
@@ -739,9 +740,29 @@ relToggle.querySelectorAll('.toggle-btn').forEach(function(btn){
 
 var soundOn = true;
 var soundToggle = document.getElementById('soundToggle');
+var bgMusic = document.getElementById('bgMusic');
+bgMusic.volume = 0.35;
+
+function tryStartMusic(){
+  if (!soundOn) return;
+  var p = bgMusic.play();
+  if (p && p.catch) p.catch(function(){
+    document.addEventListener('click', startOnFirstInteraction);
+    document.addEventListener('touchstart', startOnFirstInteraction);
+  });
+}
+function startOnFirstInteraction(){
+  if (soundOn) bgMusic.play().catch(function(){});
+  document.removeEventListener('click', startOnFirstInteraction);
+  document.removeEventListener('touchstart', startOnFirstInteraction);
+}
+window.addEventListener('load', tryStartMusic);
+
 soundToggle.addEventListener('click', function(){
   soundOn = !soundOn;
   soundToggle.innerHTML = soundOn ? '&#128266;' : '&#128263;';
+  if (soundOn) { bgMusic.play().catch(function(){}); }
+  else { bgMusic.pause(); }
 });
 
 var audioCtx = null;
